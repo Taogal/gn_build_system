@@ -1,0 +1,38 @@
+rule cc
+  command = gcc ${defines} ${include_dirs} ${cflags} ${cflags_c} -c ${in} -o ${out}
+  description = cross compiler ${out}
+rule cxx
+  command = g++ ${defines} ${include_dirs} ${cflags_cc} -c ${in} -o ${out}
+  description = CXX ${out}
+  depfile = ${out}.d
+  deps = gcc
+rule asm
+  command = gcc ${defines} ${include_dirs} ${asmflags} ${in} -c -o ${out}
+  description = cross compiler ${out}
+  depfile = ${out}.d
+  deps = gcc
+rule alink
+  command = ar cr ${out} @"${out}.rsp"
+  description = AR ${out}
+  rspfile = ${out}.rsp
+  rspfile_content = ${in}
+rule solink
+  command = gcc -shared ${ldflags}  -Wl,--start-group ${in} ${libs} -Wl,--end-group -o ${output_dir}/bin/${target_output_name}${output_extension}&& strip --strip-unneeded ${output_dir}/bin/${target_output_name}${output_extension}
+  description = SOLINK ${output_dir}/bin/${target_output_name}${output_extension}
+  rspfile = ${out}.rsp
+  rspfile_content = ${in}
+rule link
+  command = gcc ${ldflags}  -Wl,--start-group ${in} ${libs} -Wl,--end-group -o ${output_dir}/bin/${target_output_name}${output_extension} && strip --strip-unneeded ${output_dir}/bin/${target_output_name}${output_extension}
+  description = LINK ${output_dir}/bin/${target_output_name}${output_extension}
+  rspfile = ${output_dir}/bin/${target_output_name}${output_extension}.rsp
+  rspfile_content = ${in}
+rule stamp
+  command = /usr/bin/touch ${out}
+  description = STAMP ${out}
+rule copy
+  command = cp -afd ${in} ${out}
+  description = COPY ${in} ${out}
+
+subninja obj/hello.ninja
+subninja obj/hello_shared.ninja
+subninja obj/hello_static.ninja

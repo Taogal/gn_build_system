@@ -1,0 +1,30 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("hello") {
+    sources = [
+        "src/hello.cc"
+    ]
+
+    deps = [
+        ":hello_shared",
+        ":hello_static",
+    ]
+}
+
+shared_library("hello_shared") {
+    sources = [
+        "src/hello_shared.cc",
+        "src/hello_shared.h",
+    ]
+
+    defines = [ "HELLO_SHARED_IMPLEMENTATION" ]
+}
+
+static_library("hello_static") {
+    sources = [
+        "src/hello_static.cc",
+        "src/hello_static.h",
+    ]
+}

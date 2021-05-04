@@ -1,0 +1,25 @@
+ninja_required_version = 1.7.2
+
+rule gn
+  command = ../../opt/openharmony/tools/gn/gn --root=. -q --dotfile=./.gn gen .
+  description = Regenerating ninja files
+
+build build.ninja: gn
+  generator = 1
+  depfile = build.ninja.d
+
+subninja toolchain.ninja
+
+build hello: phony ./bin/hello
+build hello_shared: phony ./bin/libhello_shared.so
+build hello_static: phony ./libs/libhello_static.a
+build $:hello: phony ./bin/hello
+build $:hello_shared: phony ./bin/libhello_shared.so
+build $:hello_static: phony ./libs/libhello_static.a
+
+build all: phony $
+    ./bin/hello $
+    ./bin/libhello_shared.so $
+    ./libs/libhello_static.a
+
+default all

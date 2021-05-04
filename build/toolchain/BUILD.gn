@@ -1,0 +1,46 @@
+import("//build/toolchain/${build_compiler}.gni")
+
+if (build_compiler == "gcc") {
+    gcc_toolchain("linux_x86_64_ohos_gcc") {
+        cc = "gcc"
+        cxx = "g++"
+        ar = "ar"
+        ld = cc
+        if (build_type == "release") {
+            strip = "strip --strip-unneeded"
+        }
+    }
+    gcc_toolchain("host_linux_x86_64_gcc") {
+        cc = "gcc"
+        cxx = "g++"
+        ar = "ar"
+        ld = cc
+        if (build_type == "release") {
+            strip = "strip --strip-unneeded"
+        }
+    }
+}
+
+if (build_compiler == "clang") {
+    clang_toolchain("linux_x86_64_clang") {
+        cc = "clang"
+        cxx = "clang++"
+        ar = "llvm-ar"
+        as = "llvm-as"
+        ld = cc
+        if (build_type == "release") {
+            strip = "llvm-objcopy  --strip-all"
+        }
+    }
+    clang_toolchain("win_x86_64_clang") {
+        cc = "clang"
+        cxx = "clang++"
+        ar = "llvm-ar"
+        as = "llvm-as"
+        ld = cc
+        if (build_type == "release") {
+            strip = "llvm-objcopy  --strip-all"
+        }
+    }
+}
+

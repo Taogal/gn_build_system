@@ -1,0 +1,56 @@
+import("//build/config/variable.gni")
+
+if (target_platform == "") {
+    target_platform = "x86"
+}
+
+host_toolchains = [
+    "//build/toolchain:host_linux_x86_64_gcc"
+]
+
+if(target_platform == "arm") {
+    if(kernel_type == "liteos_a") {
+        if(build_compiler == "gcc") {
+            set_default_toolchain("//build/toolchain:linux_x86_64_ohos_gcc")
+        } else {
+            set_default_toolchain("//build/toolchain:linux_x86_64_clang")
+        }
+        default_target_configs = [ "//build/config:gsd" ]
+    } else if (kernel_type == "liteos_riscv") {
+        set_default_toolchain("//build/config:liteos")
+    } else if (kernel_type == "linux" && board_name == "hi3518ev300") {
+        set_default_toolchain("//build/toolchain:linux_x86_64_himix100_gcc")
+        default_target_configs = [ "//build/config:gsd" ]
+    } else if (kernel_type == "linux" && board_name == "hi3516dv300") {
+        set_default_toolchain("//build/lite/toolchain:linux_x86_64_himix200_gcc")
+        default_target_configs = [ "//build/config:gsd" ]
+    }
+} else if (target_platform == "x86") {
+    if(build_compiler == "gcc") {
+        set_default_toolchain("//build/toolchain:host_linux_x86_64_gcc")
+    } else {
+        set_default_toolchain("//build/toolchain:linux_x86_64_clang")
+    }
+    
+    default_target_configs = [ "//build/config:gsd" ]
+}
+
+default_shared_library_configs = default_target_configs + [ "//build/config:shared_library_config" ]
+default_static_library_configs = default_target_configs + [ "//build/config:static_pie_config" ]
+default_executable_configs = default_static_library_configs + [ "//build/config:pie_executable_config" ]
+
+set_defaults("executable") {
+    configs = default_executable_configs
+}
+
+set_defaults("static_library") {
+    configs = default_static_library_configs
+}
+
+set_defaults("shared_library") {
+    configs = default_shared_library_configs
+}
+
+set_defaults("source_set") {
+    configs = default_target_configs
+}

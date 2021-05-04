@@ -1,0 +1,148 @@
+config("cpu_arch") {
+    cflags = []
+    asmflags = cflags
+    cflags_cc = cflags
+}
+
+config("base") {
+    defines = [
+        "_FORTIFY_SOURCE=2"
+    ]
+
+    cflags = [
+        "-fno-omit-frame-pointer",
+        "-nostdlib",
+        "-fno-builtin",
+        "-Werror",
+    ]
+
+    cflags_cc = cflags
+    cflags += [
+        "-std=c99"
+    ]
+
+    ldflags = [
+        "-lc",
+        "-Wl,-z,now",
+        "-Wl,-z,relro",
+        "-Wl,-z,noexecstack"
+    ]
+}
+
+config("exceptions") {
+  cflags_cc = [ "-fexceptions" ]
+  cflags_objcc = cflags_cc
+}
+
+config("no_exceptions") {
+  cflags_cc = [ "-fno-exceptions" ]
+  cflags_objcc = cflags_cc
+  ldflags = cflags_cc
+}
+
+config("stack_protector") {
+    cflags = [ "-fstack-protector-all" ]
+    cflags_cc = cflags
+}
+
+config("static_pie_config") {
+    cflags = [ "-fPIE" ]
+    cflags_cc = cflags
+}
+
+config("shared_library_config") {
+    cflags = [ "-fPIC" ]
+    cflags_cc = cflags
+}
+
+config("pie_executable_config") {
+    ldflags = [ "-pie" ]
+}
+
+config("clang") {
+    include_dirs = [
+        "/opt/openharmony/tools/llvm/lib/x86_64-linux-ohos/include/c++/v1",
+    ]
+    
+    cflags = [
+    ]
+    
+    cflags_cc = cflags
+    ldflags = cflags
+
+    ldflags += [
+        "-L/opt/openharmony/tools/llvm/lib/clang/9.0.0/lib/x86_64-linux-ohos",
+        "-lclang_rt.builtins",
+        "-lc",
+        "-lc++",
+        "-lc++abi",
+    ]
+}
+
+config("clang_release") {
+    cflags = [
+        "-Oz",
+        "-flto"
+    ]
+    cflags_cc = cflags
+}
+
+config("release") {
+    defines = [
+        "OHOS_RELEASE",
+    ]
+    cflags = [
+        "-O2"
+    ]
+    cflags_cc = cflags
+}
+
+config("debug") {
+    defines = [
+        "OHOS_DEBUG",
+    ]
+    cflags = [
+        "-g"
+    ]
+    cflags_cc = cflags
+}
+
+config("gcc") {
+    include_dirs = []
+    ldflags = []
+}
+
+config("sysroot") {
+    include_dirs = []
+    ldflags = []
+}
+
+config("gsd") {
+    configs = [
+        ":base",
+        ":cpu_arch",
+        ":stack_protector",
+        ":exceptions",
+        ":sysroot"
+    ]
+
+    if (build_type == "release") {
+        configs += [ ":release" ]
+    } else if (build_type == "debug") {
+        configs += [ ":debug" ]
+    }
+
+    if (build_compiler == "gcc") {
+        configs += [ ":gcc" ]
+    } else if (build_compiler == "clang") {
+        configs += [":clang"]
+
+        if(build_type == "release") {
+            configs += [":clang_release"]
+        }
+    }
+}
+
+config("tools") {
+    # Add tools configs if any
+}

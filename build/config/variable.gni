@@ -1,0 +1,19 @@
+# Description: Define the global variables for all components
+declare_args() {
+    # "debug" or "release"
+    build_type = "debug"
+}
+
+declare_args() {
+    target_arch = ""
+
+    # Supported compiler: gcc, clang, risv
+    build_compiler = "clang"
+
+    # Supported kernel:
+    # cortex-m(liteos_m), liteos for cortex-a(liteos_a), liteos for riscv(liteos_riscv), linux kernel(linux_4_9)
+    kernel_type = ""
+    
+    # Supported os:x86 arm
+    target_platform = "x86"
+}
